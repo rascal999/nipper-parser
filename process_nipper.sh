@@ -109,3 +109,14 @@ sed -i 's#\_#\_ #g' report.tex
 sed -i 's#\([A-Z0-9]\),#\1, #g' report.tex
 sed -i 's#\([A-Z0-9]\)=#\1 = #g' report.tex
 sed -i 's#tEthernet#t\\newline Ethernet#g' report.tex
+
+# Split files
+csplit report.tex '/^\\subsubsection{/' '{*}'
+
+# Create findings.txt
+rm -rf output
+mkdir output
+find . -name "xx*" -exec mv {} {}.tex \;
+mv xx*.tex output
+cd output
+grep -E "vulntext{8|10}" xx*.tex | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/high/nipper/\1}\n\\newpage#g' > ../findings.txt
