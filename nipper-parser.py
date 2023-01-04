@@ -62,52 +62,55 @@ def main():
         continue
 
       title = issue['@title']
-      description = ""
-      for line in issue['section'][1]['text']:
-        description = description + " " + line
+      line_str = []
+      for line_index, line in enumerate(issue['section'][1]['text']):
+        line_str.append(line)
       risk_rating = None
       remediation = None
 
-#\begin{table}[h]
-#\renewcommand{\arraystretch}{2}
-#    \centering
-#    \begin{tabular}{|>{\large}p{11em}|>{\large}p{5em}|>{\large}p{5em}|>{\large}p{5em}|>{\large}p{6em}|}\hline
-#         Severity & \cellcolor{green}Low \newline (0.1-3.9) & \cellcolor{yellow}Moderate (4.0-6.9) & \cellcolor{orange}High (7.0-8.9) & \cellcolor{red}Critical (9.0-10.0)\\\hline
-#        Vulnerability Count& XXX & 2 & 66 & 41 \\\hline
-#    \end{tabular}
-#\end{table}
-
+      table_str = []
       # For each table
-      for table in issue['section'][1]['table']:
+      for table_index, table in enumerate(issue['section'][1]['table']):
         table_headings = table['headings']['heading']
         table_body = table['tablebody']
 
-        print("\\begin{longtblr}[")
-        print("  caption = {Long Title},")
-        print("  label = {tab:test},")
-        print("]{")
-        print("  colspec = {|XX[1]|},")
-        print("  rowhead = 1,")
-        print("  hlines,")
-        print("  vlines,")
-        print("  row{even} = {gray9},")
-        print("  row{1} = {olive9},")
-        print("}")
+        table_str.append("")
+        #print("OMG " + str(table_index))
+        #sys.exit(1)
+        table_str[table_index] = \
+"""\\begin{longtblr}[
+  caption = {Long Title},
+  label = {tab:test},
+]{
+  colspec = {|XX[1]|},
+  rowhead = 1,
+  hlines,
+  vlines,
+  row{even} = {gray9},
+  row{1} = {olive9},
+}
+"""
 
+        heading_str = ""
         for heading in table_headings:
-          print(heading + " & ",end="")
-        print(" \\\\")
-        
+          heading_str = heading_str + heading + " & "
+        heading_str = heading_str + "\\\\"
+        table_str[table_index] = table_str[table_index] + re.sub("& \\\\\\\\$", "\\\\\\\\\n", heading_str)
+
         for row in table_body['tablerow']:
           row_str = ""
           for cell in row['tablecell']:
             row_str = row_str + str(cell['item']) + " & "
           row_str = row_str + "\\\\"
-          print(re.sub(". \\\\$", "\\\\", row_str))
+          table_str[table_index] = table_str[table_index] + re.sub("& \\\\\\\\$", "\\\\\\\\\n", row_str)
 
-        print("\\end{longtblr}")
+        table_str[table_index] = table_str[table_index] + "\\end{longtblr}\n"
 
-        import pdb; pdb.set_trace()
+      for element_index, element in enumerate(line_str):
+        print(element)
+        print(table_str[element_index])
+      print(table_str[element_index])
+      import pdb; pdb.set_trace()
 
     # Extract CVEs
     for index, issue in enumerate(my_dict['document']['report']['part'][2]['section']): #[1]['section'] # VULNAUDIT (CVEs)
