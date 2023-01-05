@@ -119,4 +119,4 @@ mkdir output
 find . -name "xx*" -exec mv {} {}.tex \;
 mv xx*.tex output
 cd output
-grep -E "vulntext{8|10}" xx*.tex | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/high/nipper/\1}\n\\newpage#g' > ../findings.txt
+grep -E "vulntext\{" xx*.tex | grep -E "\{8|\{9|\{10" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/high/nipper/\1}\n\\newpage#g' > findings.txt
