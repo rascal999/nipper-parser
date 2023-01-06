@@ -108,7 +108,8 @@ sed -i 's#in Table below#in the table below.#g' report.tex
 
 # Remove Impact, Ease, Recommendations etc. for weekly reports
 perl -0777pe 's/\\textbf{Impact}.*?\\subsubsection/\\subsubsection/gs' report.tex > report_tmp.tex
-perl -0777pe 's/\\textbf{Check}.*?\\subsubsection/\\subsubsection/gs' report.tex > report_tmp.tex
+perl -0777pe 's/\\textbf{Check}.*?\\subsubsection/\\subsubsection/gs' report_tmp.tex > report.tex
+perl -0777pe 's/\\textbf{Recommendations}.*?\\subsubsection/\\subsubsection/gs' report.tex > report_tmp.tex
 mv report_tmp.tex report.tex
 
 # Space after \_ , =
