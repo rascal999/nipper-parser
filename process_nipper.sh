@@ -89,9 +89,15 @@ sed -i '/^\\caption{.*/d' report.tex
 # Update headings
 sed -i 's#\\section{Affected Devices}#\\textbf{Affected Targets}#g' report.tex
 sed -i 's#\\section{Affected Device}#\\textbf{Affected Target}#g' report.tex
+#sed -i 's#\\section{#\\textbf{#g' report.tex
 sed -i 's#\\section{Finding}#\\textbf{Description}#g' report.tex
+sed -i 's#\\section{Findings}#\\textbf{Description}#g' report.tex
+sed -i 's#\\section{Check}#\\textbf{Check}#g' report.tex
+sed -i 's#\\section{Fix}#\\textbf{Fix}#g' report.tex
 sed -i 's#\\section{Impact}#\\textbf{Impact}#g' report.tex
 sed -i 's#\\section{Ease}#\\textbf{Ease}#g' report.tex
+sed -i 's#\\section{Summary}#\\textbf{Summary}#g' report.tex
+sed -i 's#\\section{Description}#\\textbf{Description}#g' report.tex
 sed -i 's#\\section{Recommendation}#\\textbf{Recommendations}#g' report.tex
 
 # Replace potentially problematic characters
@@ -102,6 +108,7 @@ sed -i 's#in Table below#in the table below.#g' report.tex
 
 # Remove Impact, Ease, Recommendations etc. for weekly reports
 perl -0777pe 's/\\textbf{Impact}.*?\\subsubsection/\\subsubsection/gs' report.tex > report_tmp.tex
+perl -0777pe 's/\\textbf{Check}.*?\\subsubsection/\\subsubsection/gs' report.tex > report_tmp.tex
 mv report_tmp.tex report.tex
 
 # Space after \_ , =
