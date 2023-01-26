@@ -127,4 +127,14 @@ mkdir output
 find . -name "xx*" -exec mv {} {}.tex \;
 mv xx*.tex output
 cd output
-grep -E "vulntext\{" xx*.tex | grep -E "\{8|\{9|\{10" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/high/nipper/\1}\n\\newpage#g' > findings.txt
+
+grep -E "vulntext\{" xx*.tex | grep -E "\{8|\{9|\{10" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/high/nipper/\1}\n\\newpage#g' > findings-high.txt
+grep -E "vulntext\{" xx*.tex | grep -E "\{5.5" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/medium/nipper/\1}\n\\newpage#g' > findings-medium.txt
+grep -E "vulntext\{" xx*.tex | grep -E "\{2" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/low/nipper/\1}\n\\newpage#g' > findings-low.txt
+grep -E "vulntext\{" xx*.tex | grep -E "\{1\}" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/info/nipper/\1}\n\\newpage#g' > findings-info.txt
+
+mkdir high medium low info
+grep -E "vulntext\{" xx*.tex | grep -E "\{8|\{9|\{10" | choose -f ':' 0 | xargs -I '{}' mv '{}' high
+grep -E "vulntext\{" xx*.tex | grep -E "\{5.5" | choose -f ':' 0 | xargs -I '{}' mv '{}' medium
+grep -E "vulntext\{" xx*.tex | grep -E "\{2" | choose -f ':' 0 | xargs -I '{}' mv '{}' low
+grep -E "vulntext\{" xx*.tex | grep -E "\{1\}" | choose -f ':' 0 | xargs -I '{}' mv '{}' info
