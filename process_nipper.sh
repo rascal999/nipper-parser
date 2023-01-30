@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#cp ../report.tex .
+cp ../report.tex .
 dos2unix report.tex
 
 # Delete garbage at start
@@ -99,6 +99,14 @@ sed -i 's#\\section{Ease}#\\textbf{Ease}#g' report.tex
 sed -i 's#\\section{Summary}#\\textbf{Summary}#g' report.tex
 sed -i 's#\\section{Description}#\\textbf{Description}#g' report.tex
 sed -i 's#\\section{Recommendation}#\\textbf{Recommendations}#g' report.tex
+sed -i 's#\\section{Vendor Security Advisory}#\\textbf{Vendor Security Advisory}#g' report.tex
+sed -i 's#\\section{Vendor Security Advisories}#\\textbf{Vendor Security Advisories}#g' report.tex
+sed -i 's#\\section{Reference}#\\textbf{Reference}#g' report.tex
+sed -i 's#\\section{References}#\\textbf{References}#g' report.tex
+sed -i 's#CONFIRM Web link: ##g' report.tex
+
+# Remove *-URL*
+sed -i 's#\*-URL\*##g' report.tex
 
 # Replace potentially problematic characters
 sed -i 's#…#...#g' report.tex
@@ -121,20 +129,27 @@ sed -i 's#tEthernet#t\\newline Ethernet#g' report.tex
 # Split files
 csplit report.tex '/^\\subsubsection{/' '{*}'
 
-# Create findings.txt
+# Create output directory
 rm -rf output
 mkdir output
 find . -name "xx*" -exec mv {} {}.tex \;
 mv xx*.tex output
+
+# Calculate ratings for CVE issues
+./cve_ratings.sh ../report.tex
+
+# Create findings-XXX.txt files
 cd output
+grep -E "vulntext\{" xx*.tex | grep -E "\{9|\{10" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/critical/nipper/\1}\n\\newpage#g' > findings-critical.txt
+grep -E "vulntext\{" xx*.tex | grep -E "\{7|\{8" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/high/nipper/\1}\n\\newpage#g' > findings-high.txt
+grep -E "vulntext\{" xx*.tex | grep -E "\{4|\{5|\{6" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/medium/nipper/\1}\n\\newpage#g' > findings-medium.txt
+grep -E "vulntext\{" xx*.tex | grep -E "\{0.[1-9]\{1|\{2|\{3" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/low/nipper/\1}\n\\newpage#g' > findings-low.txt
+grep -E "vulntext\{" xx*.tex | grep -E "\{0.0\}" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/info/nipper/\1}\n\\newpage#g' > findings-info.txt
 
-grep -E "vulntext\{" xx*.tex | grep -E "\{8|\{9|\{10" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/high/nipper/\1}\n\\newpage#g' > findings-high.txt
-grep -E "vulntext\{" xx*.tex | grep -E "\{5.5" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/medium/nipper/\1}\n\\newpage#g' > findings-medium.txt
-grep -E "vulntext\{" xx*.tex | grep -E "\{2" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/low/nipper/\1}\n\\newpage#g' > findings-low.txt
-grep -E "vulntext\{" xx*.tex | grep -E "\{1\}" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/info/nipper/\1}\n\\newpage#g' > findings-info.txt
-
-mkdir high medium low info
-grep -E "vulntext\{" xx*.tex | grep -E "\{8|\{9|\{10" | choose -f ':' 0 | xargs -I '{}' mv '{}' high
-grep -E "vulntext\{" xx*.tex | grep -E "\{5.5" | choose -f ':' 0 | xargs -I '{}' mv '{}' medium
-grep -E "vulntext\{" xx*.tex | grep -E "\{2" | choose -f ':' 0 | xargs -I '{}' mv '{}' low
-grep -E "vulntext\{" xx*.tex | grep -E "\{1\}" | choose -f ':' 0 | xargs -I '{}' mv '{}' info
+# Move issues to respective directories
+mkdir critical high medium low info
+grep -E "vulntext\{" xx*.tex | grep -E "\{9|\{10" | choose -f ':' 0 | xargs -I '{}' mv '{}' critical
+grep -E "vulntext\{" xx*.tex | grep -E "\{7|\{8" | choose -f ':' 0 | xargs -I '{}' mv '{}' high
+grep -E "vulntext\{" xx*.tex | grep -E "\{4|\{5|\{6" | choose -f ':' 0 | xargs -I '{}' mv '{}' medium
+grep -E "vulntext\{" xx*.tex | grep -E "\{0.[1-9]|\{1|\{2|\{3" | choose -f ':' 0 | xargs -I '{}' mv '{}' low
+grep -E "vulntext\{" xx*.tex | grep -E "\{0.0\}" | choose -f ':' 0 | xargs -I '{}' mv '{}' info
