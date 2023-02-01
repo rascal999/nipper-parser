@@ -38,7 +38,7 @@ sed -i 's#\\vulntext{Medium}#\\vulntext{5.5}#g' report.tex
 # Low conversion
 sed -i 's#\\vulntext{Low}#\\vulntext{2}#g' report.tex
 # Info conversion
-sed -i 's#\\vulntext{Info}#\\vulntext{1}#g' report.tex
+sed -i 's#\\vulntext{Info}#\\vulntext{0}#g' report.tex
 
 # Replace Nipper string
 sed -i 's#Nipper#XV Security#g' report.tex
@@ -144,7 +144,7 @@ grep -E "vulntext\{" xx*.tex | grep -E "\{9|\{10" | choose --field-separator ':'
 grep -E "vulntext\{" xx*.tex | grep -E "\{7|\{8" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/high/nipper/\1}\n\\newpage#g' > findings-high.txt
 grep -E "vulntext\{" xx*.tex | grep -E "\{4|\{5|\{6" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/medium/nipper/\1}\n\\newpage#g' > findings-medium.txt
 grep -E "vulntext\{" xx*.tex | grep -E "\{0.[1-9]\{1|\{2|\{3" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/low/nipper/\1}\n\\newpage#g' > findings-low.txt
-grep -E "vulntext\{" xx*.tex | grep -E "\{0.0\}" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/info/nipper/\1}\n\\newpage#g' > findings-info.txt
+grep -E "vulntext\{" xx*.tex | grep -E "\{0\}" | choose --field-separator ':' 0 | sed 's#\(.*\).tex#\\input{tex/findings/info/nipper/\1}\n\\newpage#g' > findings-info.txt
 
 # Move issues to respective directories
 mkdir critical high medium low info
@@ -152,4 +152,4 @@ grep -E "vulntext\{" xx*.tex | grep -E "\{9|\{10" | choose -f ':' 0 | xargs -I '
 grep -E "vulntext\{" xx*.tex | grep -E "\{7|\{8" | choose -f ':' 0 | xargs -I '{}' mv '{}' high
 grep -E "vulntext\{" xx*.tex | grep -E "\{4|\{5|\{6" | choose -f ':' 0 | xargs -I '{}' mv '{}' medium
 grep -E "vulntext\{" xx*.tex | grep -E "\{0.[1-9]|\{1|\{2|\{3" | choose -f ':' 0 | xargs -I '{}' mv '{}' low
-grep -E "vulntext\{" xx*.tex | grep -E "\{0.0\}" | choose -f ':' 0 | xargs -I '{}' mv '{}' info
+grep -E "vulntext\{" xx*.tex | grep -E "\{0\}" | choose -f ':' 0 | xargs -I '{}' mv '{}' info
